@@ -30,7 +30,8 @@ export const BOTTLECONFIG = {
 export const STATUS = {
     "STOP": "stop",
     "SKRINK": "shrink",
-    "JUMP": "jump",
+    "JUMPUP": "jump_up",
+    "JUMPDOWN": "jump_down",
     "FORERAKE":"forerake",
     "HYPSOKINESIS":"hypsokinesis",
     "FALL":"fall"

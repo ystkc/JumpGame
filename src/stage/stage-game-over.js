@@ -68,10 +68,12 @@ export default class StageGameOver {
 
     addTouchEvent = e => {
         this.canvas.addEventListener('touchend', this.onTouchEnd.bind(this), true)
+        this.canvas.addEventListener('mouseup', this.onTouchEnd.bind(this), true)
     }
 
     removeTouchEvent = e => {
         this.canvas.removeEventListener('touchend', this.onTouchEnd.bind(this), true)
+        this.canvas.removeEventListener('mouseup', this.onTouchEnd.bind(this), true)
     }
 
 }

@@ -14,7 +14,13 @@ _customAnimation.to = function (obj, duration, options) {
             setTimeout(function (name) {
                 return function () {
                     TweenAnimation(obj[name], options[name], duration, options.ease || 'Linear', function (value, complete) {
-                        obj[name] = value;
+                        // Special handling for material opacity
+                        if (name === 'opacity' && obj.material) {
+                            obj.material.transparent = true;
+                            obj.material.opacity = Math.max(0, Math.min(1, value));
+                        } else {
+                            obj[name] = value;
+                        }
                         if (complete) {
                             options.onComplete && options.onComplete();
                         }

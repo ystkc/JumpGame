@@ -17,6 +17,9 @@ const GAME_OVER_NEXT_BLOCK_BACK = 5;
 const GAME_OVER_BOTH = 6;
 const HIT_NEXT_BLOCK_CENTER = 7;
 
+const LEVEL_SCORE_COUNT = 5; // 每过5个方块作为一个关卡
+const MAX_LEVEL = 3; // 最大关卡
+
 export default class StageGameMain {
     constructor(callback) {
         this.callback = callback;
@@ -26,12 +29,13 @@ export default class StageGameMain {
         const { canvas } = common;
         this.canvas = canvas;
         this.score = 0;
+        this.level = 1;
         this.scene = scene;
         this.ground = ground;
         this.bottle = bottle;
         this.gravity = common.gravity;
         this.scoreText = new ScoreText();
-
+        this.end = false;
 
         this.scoreText.init();
         this.scene.init();
@@ -53,7 +57,9 @@ export default class StageGameMain {
     restart() {
         console.log('restart Game');
         this.score = 0;
+        this.level = 1;
         this.state = '';
+        this.end = false;
         this.deleteObjectsFromScene();
         this.scene.reset();
         this.bottle.reset();
@@ -76,10 +82,11 @@ export default class StageGameMain {
         this.setDirection(initDirection);
     }
     addScore() {
+        this.scoreText.updateScore(`关卡0 得分0`);
         this.scene.addScore(this.scoreText.instance)
     }
     updateScore(score) {
-        this.scoreText.updateScore(score);
+        this.scoreText.updateScore(`关卡${this.level} 得分${score}`);
         this.scene.updateScore(this.scoreText.instance);
     }
     addGround() {
@@ -99,10 +106,14 @@ export default class StageGameMain {
     addTouchEvent() {
         this.canvas.addEventListener("touchstart", this.onTouchStart, false);
         this.canvas.addEventListener("touchend", this.onTouchEnd, false);
+        this.canvas.addEventListener("mousedown", this.onTouchStart, false);
+        this.canvas.addEventListener("mouseup", this.onTouchEnd, false);
     }
     removeTouchEvent() {
         this.canvas.removeEventListener("touchstart", this.onTouchStart, false);
         this.canvas.removeEventListener("touchend", this.onTouchEnd, false);
+        this.canvas.removeEventListener("mousedown", this.onTouchStart, false);
+        this.canvas.removeEventListener("mouseup", this.onTouchEnd, false);
     }
     onTouchStart = e => {
         console.log('touch start');
@@ -120,8 +131,10 @@ export default class StageGameMain {
         this.touchEndTime = Date.now();
         const duration = this.touchEndTime - this.touchStartTime;
         this.touchStartTime = 0;
-        this.bottle.velocity.vx = Math.min(duration / 6, 120);
-        this.bottle.velocity.vx = +this.bottle.velocity.vx.toFixed(2);
+        if (!this.end) {
+            this.bottle.velocity.vx = Math.min(duration / 6, 120);
+            this.bottle.velocity.vx = +this.bottle.velocity.vx.toFixed(2);
+        }
         this.bottle.velocity.vy = Math.min(150 + duration / 30, 300);
         this.bottle.velocity.vy = +this.bottle.velocity.vy.toFixed(2);
         this.state = "jump";
@@ -184,8 +197,15 @@ export default class StageGameMain {
         this.scene.instance.remove(this.ground.instance)
     }
 
+    endNotify() {
+        console.log('Well done!');
+        if (confirm('Well done! 再来一局？')) {
+            this.restart();
+        }
+    }
+
     checkBottleHit() {
-        if (this.checkingHit && this.bottle.instance.position.y <= BLOCKCONFIG.height / 2 + 0.1 && this.bottle.status === 'jump' && this.bottle.flyingTime > 0.3) {
+        if (this.checkingHit && this.bottle.instance.position.y <= BLOCKCONFIG.height / 2 + 0.1 && this.bottle.status === 'jump_down' && this.bottle.flyingTime > 0.3) {
             this.checkingHit = false;
 
             if (this.hit === HIT_NEXT_BLOCK_NORMAL || this.hit === HIT_NEXT_BLOCK_CENTER) {
@@ -194,6 +214,19 @@ export default class StageGameMain {
                 this.bottle.instance.position.y = BLOCKCONFIG.height / 2;
                 this.bottle.instance.position.x = this.bottle.destination[0];
                 this.bottle.instance.position.z = this.bottle.destination[1];
+                if (this.end) return;
+                if ((this.score + 1) % LEVEL_SCORE_COUNT === 0) {
+                    // 切换关卡
+                    alert(`恭喜你完成第${this.level}关！`);
+                    this.level ++;
+                    if (this.level > MAX_LEVEL) {
+                        this.level --;
+                        this.end = true;
+                        this.updateScore(++this.score);
+                        this.endNotify();
+                        return;
+                    }
+                }
                 this.updateScore(++this.score);
                 this.updateNextBlock();
             } else if (this.hit === HIT_BLOCK_CURRENT) {
@@ -245,6 +278,7 @@ export default class StageGameMain {
         bottle.destination = [+bottlePosition.x.toFixed(2), +bottlePosition.y.toFixed(2)];
         destination.push(+bottlePosition.x.toFixed(2), +bottlePosition.y.toFixed(2));
         let result1, result2;
+        return HIT_NEXT_BLOCK_CENTER;
         if (nextBlock) {
             let nextDiff = Math.pow(destination[0] - nextBlock.instance.position.x, 2) + Math.pow(destination[1] - nextBlock.instance.position.z, 2);
             let nextPolygon = nextBlock.getVertices();
@@ -290,10 +324,12 @@ export default class StageGameMain {
             targetPosition.z = this.currentBlock.instance.position.z - distance;
         }
         this.setDirection(direction)
+        if (this.score >= MAX_LEVEL * LEVEL_SCORE_COUNT) return;
+        const matIndex = parseInt(this.score / LEVEL_SCORE_COUNT); // 每5分钟切换一次方块材质（下一个关卡）
         if (type === BLOCKTYPE.CUBOID) {
-            this.nextBlock = new CuboidBlock(targetPosition.x, targetPosition.y, targetPosition.z, 'popup', width);
+            this.nextBlock = new CuboidBlock(targetPosition.x, targetPosition.y, targetPosition.z, 'popup', matIndex); // 高度不能改变，所以长宽由材质决定，下同
         } else if (type === BLOCKTYPE.CYLINDER) {
-            this.nextBlock = new CylinderBlock(targetPosition.x, targetPosition.y, targetPosition.z, 'popup', width);
+            this.nextBlock = new CylinderBlock(targetPosition.x, targetPosition.y, targetPosition.z, 'popup', matIndex);
         }
         this.scene.instance.add(this.nextBlock.instance);
         const cameraTargetPosition = {

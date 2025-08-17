@@ -2,6 +2,7 @@ import font from './font'
 
 export default class Text {
 	constructor() {
+		// 转化字体为有限字符集 https://gero3.github.io/facetype.js/
 		this.font = new THREE.Font(font);
 		this.size = 5.0;
 		this.height = 0.1;
@@ -18,7 +19,8 @@ export default class Text {
 	}
 
 	updateScore(score) {
-		const scoreStr = score.toString();
-		this.instance = new THREE.Mesh(new THREE.TextGeometry(scoreStr, { 'font': this.font, 'size': this.size, 'height': this.height }), this.material);
+		if (typeof score === 'number')
+			score = score.toString();
+		this.instance = new THREE.Mesh(new THREE.TextGeometry(score, { 'font': this.font, 'size': this.size, 'height': this.height }), this.material);
 	}
 }

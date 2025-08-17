@@ -67,7 +67,7 @@ class Scene {
         this.currentScore = scoreInstance;
         this.camera.instance.add(scoreInstance);
         scoreInstance.position.x = -24;
-        scoreInstance.position.y = 40;
+        scoreInstance.position.y = 35;
       }
     
       updateScore (scoreInstance) {
@@ -75,7 +75,7 @@ class Scene {
         this.currentScore = scoreInstance;
         this.camera.instance.add(scoreInstance);
         scoreInstance.position.x = -24;
-        scoreInstance.position.y = 40;
+        scoreInstance.position.y = 35;
       }
 
 }
