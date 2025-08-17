@@ -68,15 +68,30 @@ class Scene {
         this.camera.instance.add(scoreInstance);
         scoreInstance.position.x = -24;
         scoreInstance.position.y = 35;
-      }
+    }
+
+    addLevel (levelInstance) {
+        this.currentLevel = levelInstance;
+        this.camera.instance.add(levelInstance);
+        levelInstance.position.x = -24;
+        levelInstance.position.y = 20;
+    }
     
-      updateScore (scoreInstance) {
+
+    updateScore (scoreInstance) {
         this.camera.instance.remove(this.currentScore);
         this.currentScore = scoreInstance;
         this.camera.instance.add(scoreInstance);
         scoreInstance.position.x = -24;
         scoreInstance.position.y = 35;
-      }
+    }
+    updateLevel (levelInstance) {
+        this.camera.instance.remove(this.currentLevel);
+        this.currentLevel = levelInstance;
+        this.camera.instance.add(levelInstance);
+        levelInstance.position.x = -24;
+        levelInstance.position.y = 20;
+    }
 
 }
 

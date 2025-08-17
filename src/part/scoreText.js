@@ -19,8 +19,6 @@ export default class Text {
 	}
 
 	updateScore(score) {
-		if (typeof score === 'number')
-			score = score.toString();
 		this.instance = new THREE.Mesh(new THREE.TextGeometry(score, { 'font': this.font, 'size': this.size, 'height': this.height }), this.material);
 	}
 }

@@ -30,24 +30,10 @@ class Bottle {
         this.reset();
         const loader = new THREE.TextureLoader();
         this.standMat = loader.load(sprite_stand);
-        this.standMatRev = this.standMat.clone();
-        this.standMatRev.repeat.x = -1;
-
         this.stoopMat = loader.load(sprite_stoop);
-        this.stoopMatRev = this.stoopMat.clone();
-        this.stoopMatRev.repeat.x = -1;
-
         this.upMat = loader.load(sprite_up);
-        this.upMatRev = this.upMat.clone();
-        this.upMatRev.repeat.x = -1;
-
         this.downMat = loader.load(sprite_down);
-        this.downMatRev = this.downMat.clone();
-        this.downMatRev.repeat.x = -1;
-
         this.fallMat = loader.load(sprite_fall);
-        this.fallMatRev = this.fallMat.clone();
-        this.fallMatRev.repeat.x = -1;
     }
     init() {
 
@@ -61,9 +47,8 @@ class Bottle {
 
         // 创建平面并加载纹理
         const geometry = new THREE.PlaneGeometry(10, 10); // 调整尺寸
-        const texture = new THREE.TextureLoader().load(sprite_stand);
         const material = new THREE.MeshStandardMaterial({ 
-        map: texture,
+        map: this.standMat,
         transparent: true, // 启用透明度（如果纹理有透明通道）
         side: THREE.DoubleSide
         });
@@ -157,16 +142,20 @@ class Bottle {
         this.status = STATUS.SKRINK;
         // 切换到蹲下的材质
         if (this.direction) this.body.scale.x = -1;
+        try {
             this.body.material.map = this.stoopMat;
-        // else
-            // this.body.material.map = this.stoopMatRev;
+        } catch (e) {
+            console.log(e);
+        }
     }
     jump() {
         this.status = STATUS.JUMPUP;
         if (this.direction) this.body.scale.x = -1; else this.body.scale.x = 1;
+        try {
             this.body.material.map = this.upMat;
-        // else
-            // this.body.material.map = this.upMatRev;
+        } catch (e) {
+            console.log(e);
+        }
     }
     stop() {
         this.status = STATUS.STOP;
@@ -185,9 +174,11 @@ class Bottle {
         }
         if (!this.body) return;
         if (this.direction) this.body.scale.x = -1; else this.body.scale.x = 1;
+        try {
             this.body.material.map = this.standMat;
-        // else
-            // this.body.material.map = this.standMatRev;
+        } catch (e) {
+            console.log(e);
+        }
     }
 
     _shrink() {
@@ -215,16 +206,18 @@ class Bottle {
             this.status = STATUS.JUMPDOWN;
             // 切换到下落的材质
             if (this.direction) this.body.scale.x = -1; else this.body.scale.x = 1;
+            try {
                 this.body.material.map = this.downMat;
-            // else
-                // this.body.material.map = this.downMatRev;
+            } catch (e) {
+                console.log(e);
+            }
         }
     }
 
     _jump(tickTime) {
         const t = tickTime / 1000;
-        this._jumpStateSwitch();
         this.flyingTime = this.flyingTime + t;
+        this._jumpStateSwitch();
         const translateH = this.velocity.vx * t;
         const translateY = this.velocity.vy * t - 0.5 * this.gravity * t * t - this.gravity * this.flyingTime * t;
         this.instance.translateY(translateY);
@@ -271,9 +264,11 @@ class Bottle {
         this.status = STATUS.FALL;
         // 切换到下落的材质
         if (this.direction) this.body.scale.x = -1; else this.body.scale.x = 1;
+        try {
             this.body.material.map = this.fallMat;
-        // else
-            // this.body.material.map = this.fallMatRev;
+        } catch (e) {
+            console.log(e);
+        }
         console.log('fall')
         customAnimation.to(this.instance.position, 0.2, { y: -BLOCKCONFIG.height / 2 });
     }

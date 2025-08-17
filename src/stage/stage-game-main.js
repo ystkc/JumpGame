@@ -27,6 +27,7 @@ export default class StageGameMain {
     init() {
         console.log(`GameMain init`);
         const { canvas } = common;
+        this.state = '';
         this.canvas = canvas;
         this.score = 0;
         this.level = 1;
@@ -35,9 +36,11 @@ export default class StageGameMain {
         this.bottle = bottle;
         this.gravity = common.gravity;
         this.scoreText = new ScoreText();
+        this.levelText = new ScoreText();
         this.end = false;
 
         this.scoreText.init();
+        this.levelText.init();
         this.scene.init();
         this.ground.init();
         this.bottle.init();
@@ -82,12 +85,18 @@ export default class StageGameMain {
         this.setDirection(initDirection);
     }
     addScore() {
-        this.scoreText.updateScore(`关卡0 得分0`);
-        this.scene.addScore(this.scoreText.instance)
+        this.scoreText.updateScore(`0`);
+        this.scene.addScore(this.scoreText.instance);
+        this.levelText.updateScore(`关卡1`);
+        this.scene.addLevel(this.levelText.instance);
     }
     updateScore(score) {
-        this.scoreText.updateScore(`关卡${this.level} 得分${score}`);
+        this.scoreText.updateScore(`${score}`);
         this.scene.updateScore(this.scoreText.instance);
+        if ((score) % LEVEL_SCORE_COUNT === 0) {
+            this.levelText.updateScore(`关卡${this.level}`);
+            this.scene.updateLevel(this.levelText.instance);
+        }
     }
     addGround() {
         const scene = this.scene.instance;
@@ -129,6 +138,7 @@ export default class StageGameMain {
         if (this.touchStartTime === 0) return;
         audiomanager.shrinkStop();
         this.touchEndTime = Date.now();
+        if (isNaN(this.touchStartTime)) this.touchStartTime = this.touchEndTime;
         const duration = this.touchEndTime - this.touchStartTime;
         this.touchStartTime = 0;
         if (!this.end) {
@@ -278,7 +288,7 @@ export default class StageGameMain {
         bottle.destination = [+bottlePosition.x.toFixed(2), +bottlePosition.y.toFixed(2)];
         destination.push(+bottlePosition.x.toFixed(2), +bottlePosition.y.toFixed(2));
         let result1, result2;
-        return HIT_NEXT_BLOCK_CENTER;
+        // return HIT_NEXT_BLOCK_CENTER;
         if (nextBlock) {
             let nextDiff = Math.pow(destination[0] - nextBlock.instance.position.x, 2) + Math.pow(destination[1] - nextBlock.instance.position.z, 2);
             let nextPolygon = nextBlock.getVertices();
