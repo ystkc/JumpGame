@@ -1,12 +1,13 @@
-import { BLOCKCONFIG, STATUS, BOTTLECONFIG } from "@utils/common";
+import { BLOCKCONFIG, STATUS, BOTTLECONFIG, TOTAL_FLYING_TIME } from "@utils/common";
 // import img_head from '@images/head.png';
 // import img_bottom from '@images/bottom.png';
 // import img_top from '@images/top.png';
-import sprite_stand from '@images/stand.png';
-import sprite_stoop from '@images/stoop.png';
-import sprite_up from '@images/up.png';
-import sprite_down from '@images/down.png';
-import sprite_fall from '@images/fall.png';
+import sprite_stand from '@images/sprite_default/stand.png';
+import sprite_stoop from '@images/sprite_default/stoop.png';
+import sprite_up from '@images/sprite_default/up.png';
+import sprite_down from '@images/sprite_default/down.png';
+import sprite_fall from '@images/sprite_default/fall.png';
+
 import { customAnimation } from "@utils/animation"
 import { common } from "@utils/common";
 
@@ -25,10 +26,13 @@ class Bottle {
         this.gravity = common.gravity;
         this.flyingTime = 0;
         this.direction = 1;
+        
         this.axis = null;
         this.status = '';
         this.reset();
         const loader = new THREE.TextureLoader();
+
+        // 加载默认精灵库
         this.standMat = loader.load(sprite_stand);
         this.stoopMat = loader.load(sprite_stoop);
         this.upMat = loader.load(sprite_up);
@@ -95,17 +99,36 @@ class Bottle {
         return new THREE.Mesh(geometry, material);
     }
 
-    show() {
+    show(targetX=BOTTLECONFIG.x, targetZ=BOTTLECONFIG.z) {
         return new Promise((resolve, reject) => {
             customAnimation.to(this.instance.position, 1, {
-                x: BOTTLECONFIG.x,
+                x: targetX,
                 y: BOTTLECONFIG.y + this.blockHeight / 2,
-                z: BOTTLECONFIG.z,
+                z: targetZ,
                 ease: 'Bounce.easeOut',
                 onComplete: () => resolve()
             });
         })
     }
+
+    showEffect(sprite_set=null) { // 载入自定义的精灵库
+        const loader = new THREE.TextureLoader();
+        if (sprite_set) {
+            this.standMat = loader.load(sprite_set.STAND);
+            this.stoopMat = loader.load(sprite_set.STOOP);
+            this.upMat = loader.load(sprite_set.UP);
+            this.downMat = loader.load(sprite_set.DOWN);
+            this.fallMat = loader.load(sprite_set.FALL);
+        } else { // 恢复默认精灵库
+            this.standMat = loader.load(sprite_stand);
+            this.stoopMat = loader.load(sprite_stoop);
+            this.upMat = loader.load(sprite_up);
+            this.downMat = loader.load(sprite_down);
+            this.fallMat = loader.load(sprite_fall);
+        }
+
+    }
+
     setDirection(direction, axis) {
         this.direction = direction;
         this.axis = axis;

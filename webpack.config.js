@@ -28,9 +28,9 @@ const commonConfig = {
             "@audio": "@/public/audio"
         }
     },
-    devtool: "cheap-module-eval-source-map",
+    devtool: "eval-cheap-source-map",
     devServer: {
-        contentBase: "./dist",
+        static: "./dist",
         port: 8085,
         open: true
     },
@@ -70,7 +70,7 @@ const commonConfig = {
                                 chrome: 58,
                             },
                             useBuiltIns: "usage",
-                            corejs: 2
+                            corejs: 3
                         }
                     ]]
                 }

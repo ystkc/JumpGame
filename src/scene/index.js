@@ -14,7 +14,7 @@ class Scene {
         const { width, height, canvas } = common;
         this.renderer = new THREE.WebGLRenderer({
             canvas,
-            antialias: true,
+            antialias: false,
             preserveDrawingBuffer: true,
 
         });
@@ -73,8 +73,8 @@ class Scene {
     addLevel (levelInstance) {
         this.currentLevel = levelInstance;
         this.camera.instance.add(levelInstance);
-        levelInstance.position.x = -24;
-        levelInstance.position.y = 20;
+        levelInstance.position.x = -5;
+        levelInstance.position.y = 35;
     }
     
 
@@ -89,8 +89,8 @@ class Scene {
         this.camera.instance.remove(this.currentLevel);
         this.currentLevel = levelInstance;
         this.camera.instance.add(levelInstance);
-        levelInstance.position.x = -24;
-        levelInstance.position.y = 20;
+        levelInstance.position.x = -5;
+        levelInstance.position.y = 35;
     }
 
 }

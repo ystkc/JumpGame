@@ -38,3 +38,5 @@ export const STATUS = {
 }
 
 export const COLOR = [0x329ffc, 0x9fcf1f, 0xf44f3c, 0xffcf00]
+
+export const TOTAL_FLYING_TIME = 0.3;

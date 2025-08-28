@@ -6,9 +6,7 @@
 
 介绍：仿制微信跳一跳的网页版，实现了跳一跳的基本核心功能
 
-展示：https://jsmask.github.io/jump-game/index.html
-
-![Image Game](http://pic.yupoo.com/jsmask/30c23976/f719fa06.png)
+展示：https://ystkc.github.io/JumpGame/dist/
 
 ## Project setup
 ```
